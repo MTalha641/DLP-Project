@@ -1,149 +1,164 @@
-# Football Analysis System
+# Football Video Analysis System
 
-This repository contains two complementary systems for football (soccer) video analysis:
+A comprehensive system for football video analysis combining action recognition and player tracking technologies.
 
-1. **Player Action Spotting** - A deep learning system to detect and classify player actions in soccer videos.
-2. **Football Substitution Planning** - A comprehensive tracking and analysis system to help make informed substitution decisions.
+## Overview
 
-## Player Action Spotting
+This project integrates two core functionalities:
+1. **Action Recognition**: Deep learning system that identifies football action classes
+2. **Player Detection & Tracking**: Computer vision system for player detection and analysis
 
-The Player Action Spotting system uses deep learning to automatically detect key events in soccer videos.
+## Key Components
 
-### Features
-- End-to-end deep learning pipeline for action detection
-- Support for various CNN architectures (ResNet, RegNetY, ConvNeXt)
-- Temporal modeling with GRU, TCN, or ASFormer
-- Support for RGB, grayscale, and optical flow inputs
-- Optimized inference with checkpoint management
+### Action Recognition
+- **Classification**: 17 football action classes:
+  1. Ball out of play
+  2. Clearance
+  3. Corner
+  4. Direct free-kick
+  5. Foul
+  6. Goal
+  7. Indirect free-kick
+  8. Kick-off
+  9. Offside
+  10. Penalty
+  11. Red card
+  12. Shots off target
+  13. Shots on target
+  14. Substitution
+  15. Throw-in
+  16. Yellow card
+  17. Background (no action)
+- **Model Architecture**: 
+  - Feature extraction with CNN backbones (ResNet)
+  - Temporal modeling with GRU
+  - Support for Temporal Shift Module (TSM)
+  - GSM for feature extraction
 
-### Requirements
-```
-Python 3.x
-PyTorch
-torchvision
-numpy
-timm
-tqdm
-tabulate
-```
-
-### Installation
-```bash
-# Create a virtual environment
-python -m venv playerspot
-pip install -r requirements.txt
-
-# For CUDA 12.1 support
-pip uninstall numpy
-pip uninstall torch torchvision torchaudio
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-pip install "numpy<2"
-```
-
-### Dataset
-**Note:** The dataset is not included in this repository due to its large size. To run the code, you need to:
-
-1. Download the SoccerNet dataset from [https://www.soccer-net.org/](https://www.soccer-net.org/)
-2. Process the dataset using the provided scripts:
-   ```bash
-   python parse_soccernet.py
-   python frames_as_jpg_soccernet.py
-   ```
-3. Place the processed dataset in the appropriate directory structure before training or testing.
-
-### Usage
-
-#### Testing
-```bash
-.\playerspot\Scripts\Activate.ps1
-python test_e2e.py <model_weights_dir> <frame_dir> -s test --save
-```
-
-#### Validation
-```bash
-.\playerspot\Scripts\Activate.ps1
-python test_e2e.py <model_weights_dir> <frame_dir> -s val --save
-```
-
-#### Creating Annotated Videos
-```bash
-python create_annotated_video.py
-```
-
-#### Training a New Model
-```bash
-python train_e2e.py <dataset> <frame_dir> -m <feature_arch> -t <temporal_arch> -s <save_dir>
-```
-
-#### Preprocessing SoccerNet Dataset
-```bash
-python parse_soccernet.py
-python frames_as_jpg_soccernet.py
-```
-
-## Football Substitution Planning
-
-A computer vision-based system that tracks players and the ball to provide data-driven insights for substitution decisions.
-
-### Features
-- Player and ball tracking
-- Team assignment
-- Ball possession tracking
-- Camera movement estimation
-- Player speed and distance calculations
-- 2D to 3D view transformation
-- Visualizations for tactical analysis
-
-### Components
-- **Trackers**: YOLO-based object detection and tracking
-- **Team Assigner**: Assigns players to teams based on jersey colors
-- **Player-Ball Assigner**: Determines which player possesses the ball
-- **Camera Movement Estimator**: Accounts for camera movements
-- **View Transformer**: Converts pixel coordinates to field coordinates
-- **Speed and Distance Estimator**: Calculates player metrics
-
-### Input Data
-**Note:** Sample input videos are not included in this repository. To run the Football Substitution Planning system:
-
-1. Place your football match videos in the `Football_Substitution_Planning/input_videos/` directory
-2. The expected format is standard video files (MP4, AVI, etc.) of football matches with a clear view of the field
-
-### Usage
-```bash
-python main.py
-```
+### Player Detection & Tracking
+- **Detection**: YOLO-based detection of players and ball
+- **Tracking**: ByteTrack algorithm for multi-object tracking
+- **Team Assignment**: Jersey color-based team classification
+- **Field Analysis**: Transform from pixel to field coordinates
+- **Ball Tracking**: Detection and possession assignment
+- **Performance Metrics**: Speed and distance calculation
 
 ## Project Structure
 
 ```
-├── Action/                          # Player Action Spotting
-│   ├── author_training_weights/     # Pretrained model weights
+├── Action/                          # Action Recognition
+│ 
 │   ├── data/                        # Dataset configuration
 │   ├── model/                       # Model definitions
 │   ├── test_e2e.py                  # Inference script
 │   ├── train_e2e.py                 # Training script
 │   ├── parse_soccernet.py           # Data preprocessing
 │   ├── frames_as_jpg_soccernet.py   # Frame extraction
-│   ├── create_annotated_video.py    # Visualization
-│   └── how_to_run.txt               # Quick start guide
+│   └── create_annotated_video.py    # Visualization
 │
-├── Football_Substitution_Planning/  # Substitution Planning System
+├── Football_Substitution_Planning/  # Player Detection & Tracking
+│   ├── main.py                      # Main execution script
+│   ├── models/                      # YOLO models
 │   ├── camera_movement_estimator/   # Camera movement compensation
-│   ├── input_videos/                # Source videos
-│   ├── models/                      # Pretrained models
-│   ├── output_videos/               # Generated outputs
 │   ├── player_ball_assigner/        # Ball possession detection
 │   ├── speed_and_distance_estimator/# Player metrics calculation
-│   ├── stubs/                       # Cached data
 │   ├── team_assigner/               # Team classification
 │   ├── trackers/                    # Object tracking
 │   ├── utils/                       # Utility functions
-│   ├── view_transformer/            # 2D to 3D coordinate mapping
-│   └── main.py                      # Main execution script
+│   └── view_transformer/            # 2D to 3D coordinate mapping
 ```
 
-## License
-This project is for educational purposes.
+## Technical Implementation
+
+### Action Recognition
+- **Input**: Video frames from football matches
+- **Model Parameters**:
+  ```json
+  {
+    "batch_size": 8,
+    "clip_len": 100,
+    "crop_dim": null,
+    "dataset": "soccernetv2",
+    "dilate_len": 0,
+    "feature_arch": "rny002_gsm",
+    "gpu_parallel": false,
+    "learning_rate": 0.001,
+    "mixup": true,
+    "modality": "rgb",
+    "num_classes": 17,
+    "num_epochs": 100,
+    "start_val_epoch": 80,
+    "temporal_arch": "gru",
+    "warm_up_epochs": 3
+  }
+  ```
+- **Model Architecture**: 
+  - Feature Extraction: GSM (Gate Shift Module)
+  - Temporal Modeling: GRU sequence model
+  - Clip Length: 100 frames per segment
+  - Output: 16 action classes 
+- **Training Configuration**: 
+  - Dataset: SoccerNet v2
+  - Optimization: AdamW with learning rate scheduling
+
+### Player Detection & Tracking
+- **Detection**: YOLOv5 for player and ball detection
+- **Tracking**: ByteTrack algorithm for reliable multi-object tracking
+- **Team Assignment**: Color-based team classification
+
+## Requirements
+
+Core dependencies:
+```
+Python 3.x
+PyTorch
+torchvision
+numpy
+OpenCV
+timm
+```
+
+## Usage
+
+### Action Recognition
+```bash
+# Create a virtual environment
+python -m venv playerspot
+.\playerspot\Scripts\Activate.ps1
+pip install -r requirements.txt
+
+# Testing
+python Action/test_e2e.py <model_weights_dir> <frame_dir> -s test --save
+
+# Create annotated videos
+python Action/create_annotated_video.py
+```
+
+### Player Detection & Tracking
+```bash
+# Run player tracking
+python Football_Substitution_Planning/main.py
+```
+
+## Dataset
+
+The system uses the SoccerNet dataset for action recognition, which must be downloaded separately:
+1. Download from [https://www.soccer-net.org/](https://www.soccer-net.org/)
+2. Process using the provided scripts:
+   ```
+   python parse_soccernet.py
+   python frames_as_jpg_soccernet.py
+   ```
+
+## Input Videos
+
+For player detection and tracking, place football match videos in:
+`Football_Substitution_Planning/input_videos/`
+
+## Known Limitations
+- Action recognition performance depends on camera angles and video quality
+- Player tracking may lose accuracy in crowded scenes
+- Processing speed depends on hardware capabilities
 
 ## Contributors
 - 21K-3288

@@ -1,0 +1,73 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv
+venv/
+playerspot/
+ENV/
+
+# PyTorch model files
+# (uncomment if you want to exclude large model files)
+# *.pt
+# *.pth
+# *.onnx
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Large media files
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.mpeg
+*.jpg
+*.jpeg
+*.png
+*.gif
+# Except the readme assets
+!readme_assets/*.jpg
+!readme_assets/*.jpeg
+!readme_assets/*.png
+!readme_assets/*.gif
+
+# Input/output data
+Football_Substitution_Planning/input_videos/*
+Football_Substitution_Planning/output_videos/*
+# Keep .gitkeep files
+!Football_Substitution_Planning/input_videos/.gitkeep
+!Football_Substitution_Planning/output_videos/.gitkeep
+
+# Large dataset files
+*.csv
+*.json
+*.json.gz
+*.h5
+*.npy
+*.npz
+*.hdf5
+
+# IDE-specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store 
