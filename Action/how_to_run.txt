@@ -1,0 +1,17 @@
+Create a virtual environment:
+python -m venv playerspot
+pip install -r requirements.txt
+pip uninstall numpy
+pip uninstall torch torchvision torchaudio
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 (For CUDA 12.1)
+pip install "numpy<2"
+
+Testing:
+.\playerspot\Scripts\Activate.ps1
+python test_e2e.py E:\fahad\player_action_spotting\author_training_weights E:\fahad\player_action_spotting\dataset\frame_dir -s test --save
+
+Validation:
+.\playerspot\Scripts\Activate.ps1
+python test_e2e.py E:\fahad\player_action_spotting\author_training_weights E:\fahad\player_action_spotting\dataset\frame_dir -s val --save
+
+After getting json files in author_training-weights folder run create_annotated_video.py
